@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="theme-color" content="#101923">
+
+<title>Orbit — Scientific Calculator</title>
+
+<style>
+
+  :root {
+
+    color-scheme: dark;
+
+    --bg: #090f17;
+
+    --panel: #101923;
+
+    --key: #1d2b39;
+
+    --border: #293a49;
+
+    --text: #edf5fa;
+
+    --muted: #9bafbf;
+
+    --accent: #96ecd3;
+
+  }
+
+
+
+* { box-sizing: border-box; }
+
+
+
+body {
+
+    margin: 0;
+
+    min-height: 100vh;
+
+    padding: 32px 18px;
+
+    background:
+
+      radial-gradient(ellipse at 20% 0%, #1b394b66, transparent 60%),
+
+      var(--bg);
+
+    color: var(--text);
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  }
+
+
+
+button, input { font: inherit; }
+
+
+
+button {
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+
+  }
+
+
+
+button:focus-visible,
+
+  input:focus-visible,
+
+  summary:focus-visible {
+
+    outline: 2px solid var(--accent);
+
+    outline-offset: 3px;
+
+  }
+
+
+
+header, .intro, main, footer {
+
+    max-width: 1040px;
+
+    margin-left: auto;
+
+    margin-right: auto;
+
+  }
+
+
+
+header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+  }
+
+
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 22px;
+
+    font-weight: 650;
+
+    letter-spacing: -1px;
+
+  }
+
+
+
+.logo {
+
+    display: grid;
+
+    place-items: center;
+
+    width: 42px;
+
+    height: 42px;
+
+    color: var(--accent);
+
+    border: 1px solid #96ecd366;
+
+    border-radius: 14px;
+
+    font-size: 30px;
+
+  }
+
+
+
+.badge {
+
+    padding: 7px 12px;
+
+    border: 1px solid #96ecd333;
+
+    border-radius: 30px;
+
+    color: var(--accent);
+
+    font-size: 11px;
+
+  }
+
+
+
+.intro { margin-top: 34px; margin-bottom: 24px; }
+
+
+
+.eyebrow {
+
+    color: var(--accent);
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+  }
+
+
+
+h1 {
+
+    margin: 10px 0;
+
+    font-size: clamp(27px, 5vw, 39px);
+
+    font-weight: 550;
+
+    letter-spacing: -1.5px;
+
+  }
+
+
+
+p {
+
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+
+  }
+
+
+
+main {
+
+    display: grid;
+
+    grid-template-columns: minmax(0, 660px) minmax(250px, 1fr);
+
+    gap: 20px;
+
+    align-items: start;
+
+  }
+
+
+
+.calculator, .history {
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    border-radius: 22px;
+
+    box-shadow: 0 24px 70px #0003;
+
+    overflow: hidden;
+
+  }
+
+
+
+.toolbar {
+
+    padding: 18px 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+  }
+
+
+
+.toolbar-label {
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1.5px;
+
+  }
+
+
+
+.modes {
+
+    display: flex;
+
+    background: var(--bg);
+
+    border-radius: 10px;
+
+    padding: 4px;
+
+  }
+
+
+
+.modes button {
+
+    background: transparent;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    padding: 8px 12px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+  }
+
+
+
+.modes button[aria-pressed="true"] {
+
+    color: #10251e;
+
+    background: var(--accent);
+
+  }
+
+
+
+.display {
+
+    margin: 0 16px;
+
+    padding: 18px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 15px;
+
+    background: #0a131d;
+
+  }
+
+
+
+label {
+
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 8px;
+
+    text-transform: uppercase;
+
+  }
+
+
+
+#expression {
+
+    width: 100%;
+
+    min-width: 0;
+
+    padding: 9px 0;
+
+    background: transparent;
+
+    color: #c4d6e2;
+
+    border: 0;
+
+    border-radius: 4px;
+
+    text-align: right;
+
+    font: 20px ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  }
+
+
+
+#expression::placeholder { color: #658092; }
+
+
+
+#result {
+
+    display: block;
+
+    min-height: 68px;
+
+    padding: 6px 0;
+
+    overflow-x: auto;
+
+    white-space: nowrap;
+
+    text-align: right;
+
+    font-size: clamp(30px, 5vw, 46px);
+
+    letter-spacing: -1px;
+
+  }
+
+
+
+#status {
+
+    min-height: 36px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    overflow-wrap: anywhere;
+
+  }
+
+
+
+#status.error { color: #ffb7af; }
+
+
+
+.display-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+
+  }
+
+
+
+.subtle {
+
+    padding: 7px;
+
+    border: 0;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+  }
+
+
+
+.subtle:hover {
+
+    background: #ffffff08;
+
+    color: var(--accent);
+
+  }
+
+
+
+.keys {
+
+    display: grid;
+
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+
+    gap: 8px;
+
+    padding: 16px;
+
+  }
+
+
+
+.key {
+
+    min-height: 52px;
+
+    padding: 8px 2px;
+
+    border: 1px solid transparent;
+
+    border-radius: 10px;
+
+    background: var(--key);
+
+    color: var(--text);
+
+    font-size: 20px;
+
+    transition: background 120ms, transform 120ms;
+
+  }
+
+
+
+.key:hover { background: #304557; }
+
+  .key:active { transform: scale(.96); }
+
+
+
+.key.science {
+
+    background: #152531;
+
+    color: #b4cedf;
+
+    font-size: 14px;
+
+  }
+
+
+
+.key.science:hover { background: #294152; }
+
+
+
+.key.operator {
+
+    background: #263e4a;
+
+    color: #abeedc;
+
+  }
+
+
+
+.key.clear { background: #3c2b32; color: #ffc3b8; }
+
+
+
+.key.equal {
+
+    grid-column: span 4;
+
+    color: #10271f;
+
+    background: var(--accent);
+
+    font-size: 25px;
+
+  }
+
+
+
+.key.equal:hover { background: #c0ffe9; }
+
+  .key.wide { grid-column: span 2; }
+
+
+
+.hint {
+
+    padding: 14px 20px;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+  }
+
+
+
+kbd {
+
+    padding: 1px 4px;
+
+    border: 1px solid #425868;
+
+    border-radius: 4px;
+
+    font: inherit;
+
+  }
+
+
+
+.history { padding: 22px; }
+
+
+
+.history-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+  }
+
+
+
+h2 { margin: 0; font-size: 16px; font-weight: 550; }
+
+  .history > p { font-size: 12px; margin-top: 5px; }
+
+
+
+#history-list {
+
+    display: grid;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    max-height: 370px;
+
+    overflow-y: auto;
+
+  }
+
+
+
+.empty {
+
+    padding: 34px 8px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    line-height: 1.8;
+
+  }
+
+
+
+.entry {
+
+    display: block;
+
+    width: 100%;
+
+    padding: 14px;
+
+    background: #162633;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    text-align: right;
+
+    color: var(--text);
+
+    overflow-wrap: anywhere;
+
+  }
+
+
+
+.entry:hover { border-color: #96ecd388; }
+
+
+
+.entry small {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--muted);
+
+    text-align: left;
+
+    font-size: 10px;
+
+  }
+
+
+
+.entry span { font-size: 12px; color: #bdcfdd; }
+
+
+
+.entry strong {
+
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 21px;
+
+    font-weight: 500;
+
+    color: var(--accent);
+
+  }
+
+
+
+details {
+
+    margin-top: 20px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid var(--border);
+
+  }
+
+
+
+summary { cursor: pointer; font-size: 12px; }
+
+  details p { font-size: 12px; margin-top: 12px; }
+
+  code { color: var(--accent); }
+
+
+
+footer {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-top: 24px;
+
+    color: #8da3b3;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+
+  }
+
+
+
+@media (max-width: 760px) {
+
+    body { padding: 22px 12px; }
+
+    main { grid-template-columns: 1fr; }
+
+    .intro { margin-top: 28px; }
+
+    .keys { padding: 12px; gap: 6px; }
+
+    .key { min-height: 48px; }
+
+    .display { margin: 0 12px; padding: 14px; }
+
+    .toolbar { padding: 15px; }
+
+    .badge { font-size: 10px; }
+
+    .empty { padding: 16px 5px; }
+
+    #history-list { max-height: 240px; }
+
+    footer { flex-direction: column; gap: 4px; }
+
+  }
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    .key { transition: none; }
+
+  }
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<header>
+
+  <div class="brand">
+
+    <span class="logo" aria-hidden="true">◎</span>
+
+    <span>orbit</span>
+
+  </div>
+
+  <span class="badge">Offline · No sign-in</span>
+
+</header>
+
+
+
+<section class="intro">
+
+  <div class="eyebrow">Space for your next idea</div>
+
+  <h1>Complex math. Clear answers.</h1>
+
+  <p>Your everyday scientific workspace, without the distractions.</p>
+
+</section>
+
+
+
+<main>
+
+  <section class="calculator" aria-label="Scientific calculator">
+
+    <div class="toolbar">
+
+      <span class="toolbar-label">Scientific workspace</span>
+
+      <div class="modes" role="group" aria-label="Angle unit">
+
+        <button id="deg" type="button" aria-pressed="true">DEG</button>
+
+        <button id="rad" type="button" aria-pressed="false">RAD</button>
+
+      </div>
+
+    </div>
+
+
+
+<div class="display">
+
+      <label for="expression">Expression</label>
+
+      <input
+
+        id="expression"
+
+        type="text"
+
+        placeholder="sin(30) + 2^3"
+
+        maxlength="256"
+
+        autocomplete="off"
+
+        autocapitalize="off"
+
+        spellcheck="false"
+
+        aria-describedby="status"
+
+      >
+
+      <output id="result" for="expression" aria-live="polite">0</output>
+
+      <div id="status" role="status">Ready when you are.</div>
+
+      <div class="display-footer">
+
+        <span id="angle-label">DEGREES · REAL NUMBERS</span>
+
+        <button id="copy" class="subtle" type="button">Copy result</button>
+
+      </div>
+
+    </div>
+
+
+
+<div class="keys" id="keys"></div>
+
+
+
+<div class="hint">
+
+      <span><kbd>Enter</kbd> calculate · <kbd>Esc</kbd> clear</span>
+
+      <span>12-digit display</span>
+
+    </div>
+
+  </section>
+
+
+
+<aside class="history" aria-label="Calculation history">
+
+    <div class="history-header">
+
+      <h2>Recent calculations</h2>
+
+      <button id="clear-history" type="button" class="subtle">Clear</button>
+
+    </div>
+
+    <p>Tap a calculation to restore it.</p>
+
+    <div id="history-list"></div>
+
+
+
+<details>
+
+      <summary>Quick guide & precision</summary>
+
+      <p>
+
+        Try <code>sqrt(81)</code>, <code>sin(30)</code>, or
+
+        <code>2^5</code>. Adjacent values multiply:
+
+        <code>2π</code> and <code>2(3+4)</code>.
+
+      </p>
+
+      <p>
+
+        DEG uses degrees; RAD uses radians. Inverse trig returns
+
+        the selected unit. History restores the original angle mode.
+
+      </p>
+
+      <p>
+
+        <code>%</code> divides by 100:
+
+        <code>200×10%</code> = 20.
+
+        <code>Ans</code> inserts the previous answer.
+
+      </p>
+
+      <p>
+
+        Powers associate right: <code>2^3^2</code> = 512.
+
+        <code>-2^2</code> = -4; <code>(-2)^2</code> = 4.
+
+        Multiplication and division, including implicit multiplication,
+
+        evaluate left to right. Use parentheses to avoid ambiguity.
+
+      </p>
+
+      <p>
+
+        Standard floating-point arithmetic, with 12 significant digits
+
+        displayed. Internal answers retain available precision.
+
+        Rounding errors, overflow, and underflow are possible.
+
+      </p>
+
+      <p>
+
+        History stays in this browser when local storage is available.
+
+        Nothing is sent to a server.
+
+      </p>
+
+    </details>
+
+  </aside>
+
+</main>
+
+
+
+<footer>
+
+  <span>Built for focus. Your calculations stay on your device.</span>
+
+  <span>No dependencies · Works offline</span>
+
+</footer>
+
+
+
+<script>
+
+"use strict";
+
+
+
+/* Restricted expression parser: never uses eval or Function. */
+
+function calculate(source, mode = "DEG", ans = 0) {
+
+  if (source.length > 256) throw Error("Expression is too long.");
+
+
+
+source = source
+
+    .replace(/×/g, "*")
+
+    .replace(/÷/g, "/")
+
+    .replace(/−/g, "-")
+
+    .replace(/π/g, "pi");
+
+
+
+const tokens = [];
+
+  let pos = 0;
+
+
+
+while (pos < source.length) {
+
+    const match =
+
+      /^(\s+|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?|[a-zA-Z]+|[+\-*/^()!%])/
+
+        .exec(source.slice(pos));
+
+
+
+if (!match) throw Error("Unsupported character.");
+
+    pos += match[0].length;
+
+    if (match[0].trim()) tokens.push(match[0]);
+
+  }
+
+
+
+if (!tokens.length) throw Error("Enter an expression.");
+
+
+
+let i = 0;
+
+  const peek = () => tokens[i];
+
+
+
+const finite = x => {
+
+    if (!Number.isFinite(x)) {
+
+      throw Error(
+
+        Number.isNaN(x) ? "No real-valued result." : "Result is too large."
+
+      );
+
+    }
+
+    return Object.is(x, -0) ? 0 : x;
+
+  };
+
+
+
+function sum() {
+
+    let x = product();
+
+
+
+while (peek() === "+" || peek() === "-") {
+
+      const op = tokens[i++];
+
+      const y = product();
+
+      x = finite(op === "+" ? x + y : x - y);
+
+    }
+
+
+
+return x;
+
+  }
+
+
+
+function product() {
+
+    let x = unary();
+
+
+
+while (true) {
+
+      const t = peek();
+
+
+
+if (t === "*" || t === "/") {
+
+        i++;
+
+        const y = unary();
+
+
+
+if (t === "/" && y === 0) {
+
+          throw Error("Cannot divide by zero.");
+
+        }
+
+
+
+x = finite(t === "*" ? x * y : x / y);
+
+      } else if (t && (/^[\d.a-zA-Z]/.test(t) || t === "(")) {
+
+        x = finite(x * unary());
+
+      } else {
+
+        return x;
+
+      }
+
+    }
+
+  }
+
+
+
+function unary() {
+
+    if (peek() === "+") {
+
+      i++;
+
+      return unary();
+
+    }
+
+
+
+if (peek() === "-") {
+
+      i++;
+
+      return finite(-unary());
+
+    }
+
+
+
+return power();
+
+  }
+
+
+
+function power() {
+
+    let x = postfix();
+
+
+
+if (peek() === "^") {
+
+      i++;
+
+      x = finite(x ** unary());
+
+    }
+
+
+
+return x;
+
+  }
+
+
+
+function postfix() {
+
+    let x = atom();
+
+
+
+while (peek() === "!" || peek() === "%") {
+
+      if (tokens[i++] === "%") {
+
+        x /= 100;
+
+      } else {
+
+        if (!Number.isInteger(x) || x < 0 || x > 170) {
+
+          throw Error("Factorial requires an integer from 0 to 170.");
+
+        }
+
+
+
+let f = 1;
+
+        for (let k = 2; k <= x; k++) f *= k;
+
+        x = f;
+
+      }
+
+    }
+
+
+
+return finite(x);
+
+  }
+
+
+
+function atom() {
+
+    const t = tokens[i++];
+
+    if (!t) throw Error("Complete the expression.");
+
+
+
+if (/^[\d.]/.test(t)) return finite(Number(t));
+
+
+
+if (t === "(") {
+
+      const x = sum();
+
+      if (tokens[i++] !== ")") throw Error("Check your parentheses.");
+
+      return x;
+
+    }
+
+
+
+const name = t.toLowerCase();
+
+
+
+if (name === "pi") return Math.PI;
+
+    if (name === "e") return Math.E;
+
+    if (name === "ans") return finite(ans);
+
+
+
+const functions = [
+
+      "sin", "cos", "tan", "asin", "acos", "atan",
+
+      "sqrt", "ln", "log", "abs"
+
+    ];
+
+
+
+if (!functions.includes(name)) {
+
+      throw Error("Expected a number or supported function.");
+
+    }
+
+
+
+if (tokens[i++] !== "(") {
+
+      throw Error("Functions need parentheses.");
+
+    }
+
+
+
+const x = sum();
+
+
+
+if (tokens[i++] !== ")") {
+
+      throw Error("Check your parentheses.");
+
+    }
+
+
+
+const angle = mode === "DEG" ? x * Math.PI / 180 : x;
+
+    const inverse = n => mode === "DEG" ? n * 180 / Math.PI : n;
+
+
+
+if ((name === "ln" || name === "log") && x <= 0) {
+
+      throw Error("Logarithms require a positive input.");
+
+    }
+
+
+
+if (name === "sqrt" && x < 0) {
+
+      throw Error("Square root requires a non-negative input.");
+
+    }
+
+
+
+if (name === "tan" && Math.abs(Math.cos(angle)) < 1e-14) {
+
+      throw Error("Tangent is undefined at this angle.");
+
+    }
+
+
+
+if ((name === "asin" || name === "acos") && Math.abs(x) > 1) {
+
+      throw Error("Input must be between -1 and 1.");
+
+    }
+
+
+
+switch (name) {
+
+      case "sin": return finite(Math.sin(angle));
+
+      case "cos": return finite(Math.cos(angle));
+
+      case "tan": return finite(Math.tan(angle));
+
+      case "asin": return finite(inverse(Math.asin(x)));
+
+      case "acos": return finite(inverse(Math.acos(x)));
+
+      case "atan": return finite(inverse(Math.atan(x)));
+
+      case "sqrt": return finite(Math.sqrt(x));
+
+      case "ln": return finite(Math.log(x));
+
+      case "log": return finite(Math.log10(x));
+
+      case "abs": return Math.abs(x);
+
+    }
+
+  }
+
+
+
+const result = finite(sum());
+
+
+
+if (i !== tokens.length) {
+
+    throw Error("Check your expression.");
+
+  }
+
+
+
+return result;
+
+}
+
+
+
+/* Application state */
+
+const $ = id => document.getElementById(id);
+
+const input = $("expression");
+
+const output = $("result");
+
+const storageKey = "orbit-scientific-v1";
+
+
+
+let mode = "DEG";
+
+let answer = 0;
+
+let history = [];
+
+let completed = false;
+
+let displayedValue = null;
+
+
+
+const format = number => Number(number.toPrecision(12)).toString();
+
+
+
+try {
+
+  const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+
+
+
+if (saved && ["DEG", "RAD"].includes(saved.mode)) {
+
+    mode = saved.mode;
+
+  }
+
+
+
+if (saved && typeof saved.answer === "number" &&
+
+      Number.isFinite(saved.answer)) {
+
+    answer = saved.answer;
+
+  }
+
+
+
+if (saved && Array.isArray(saved.history)) {
+
+    history = saved.history.filter(item =>
+
+      item &&
+
+      typeof item.expression === "string" &&
+
+      item.expression.length <= 256 &&
+
+      typeof item.value === "number" &&
+
+      Number.isFinite(item.value) &&
+
+      typeof item.ans === "number" &&
+
+      Number.isFinite(item.ans) &&
+
+      ["DEG", "RAD"].includes(item.mode)
+
+    ).slice(0, 20);
+
+  }
+
+} catch {
+
+  // Calculator remains usable when browser storage is unavailable.
+
+}
+
+
+
+function persist() {
+
+  try {
+
+    localStorage.setItem(storageKey, JSON.stringify({
+
+      mode, answer, history
+
+    }));
+
+  } catch {
+
+    // Storage may be disabled, full, or restricted for local files.
+
+  }
+
+}
+
+
+
+function message(text, error = false) {
+
+  $("status").textContent = text;
+
+  $("status").classList.toggle("error", error);
+
+}
+
+
+
+function updateMode() {
+
+  $("deg").setAttribute("aria-pressed", String(mode === "DEG"));
+
+  $("rad").setAttribute("aria-pressed", String(mode === "RAD"));
+
+
+
+$("angle-label").textContent =
+
+    (mode === "DEG" ? "DEGREES" : "RADIANS") + " · REAL NUMBERS";
+
+}
+
+
+
+function markEdited() {
+
+  completed = false;
+
+  displayedValue = null;
+
+  output.textContent = "—";
+
+  message("Press = or Enter to calculate.");
+
+}
+
+
+
+function focusEnd() {
+
+  input.focus();
+
+  input.setSelectionRange(input.value.length, input.value.length);
+
+}
+
+
+
+function insert(text) {
+
+  if (completed) {
+
+    const continues = ["+", "-", "×", "÷", "*", "/", "^", "^2", "!", "%"]
+
+      .includes(text);
+
+
+
+input.value = continues ? "Ans" : "";
+
+    input.setSelectionRange(input.value.length, input.value.length);
+
+  }
+
+
+
+const start = input.selectionStart ?? input.value.length;
+
+  const end = input.selectionEnd ?? start;
+
+
+
+if (input.value.length - (end - start) + text.length > 256) {
+
+    message("Maximum expression length is 256 characters.", true);
+
+    return;
+
+  }
+
+
+
+input.setRangeText(text, start, end, "end");
+
+  markEdited();
+
+  input.focus();
+
+}
+
+
+
+function clearExpression() {
+
+  input.value = "";
+
+  output.textContent = "0";
+
+  completed = false;
+
+  displayedValue = null;
+
+  message("Expression cleared. Ans is still available.");
+
+  input.focus();
+
+}
+
+
+
+function backspace() {
+
+  const start = input.selectionStart ?? input.value.length;
+
+  const end = input.selectionEnd ?? start;
+
+
+
+input.setRangeText(
+
+    "",
+
+    start === end ? Math.max(0, start - 1) : start,
+
+    end,
+
+    "end"
+
+  );
+
+
+
+markEdited();
+
+  input.focus();
+
+}
+
+
+
+function negate() {
+
+  const next = completed
+
+    ? "-(Ans)"
+
+    : input.value ? "-(" + input.value + ")" : "-";
+
+
+
+if (next.length > 256) {
+
+    message("Maximum expression length is 256 characters.", true);
+
+    return;
+
+  }
+
+
+
+input.value = next;
+
+  markEdited();
+
+  focusEnd();
+
+}
+
+
+
+function evaluate() {
+
+  try {
+
+    const expression = input.value.trim();
+
+    const previousAnswer = answer;
+
+    const value = calculate(expression, mode, previousAnswer);
+
+
+
+answer = value;
+
+    displayedValue = value;
+
+    completed = true;
+
+    output.textContent = format(value);
+
+
+
+history.unshift({
+
+      expression,
+
+      value,
+
+      mode,
+
+      ans: previousAnswer
+
+    });
+
+
+
+history = history.slice(0, 20);
+
+    persist();
+
+    renderHistory();
+
+    message("Calculated in " + mode + " mode.");
+
+  } catch (error) {
+
+    completed = false;
+
+    displayedValue = null;
+
+    output.textContent = "—";
+
+    message(error.message, true);
+
+  }
+
+}
+
+
+
+/* Keypad */
+
+const buttons = [
+
+  ["sin", "sin(", "science"],
+
+  ["cos", "cos(", "science"],
+
+  ["tan", "tan(", "science"],
+
+  ["(", "(", "science"],
+
+  [")", ")", "science"],
+
+  ["AC", "@clear", "clear", "Clear expression"],
+
+
+
+["sin⁻¹", "asin(", "science", "Inverse sine"],
+
+  ["cos⁻¹", "acos(", "science", "Inverse cosine"],
+
+  ["tan⁻¹", "atan(", "science", "Inverse tangent"],
+
+  ["ln", "ln(", "science", "Natural logarithm"],
+
+  ["log", "log(", "science", "Base ten logarithm"],
+
+  ["⌫", "@backspace", "science", "Backspace"],
+
+
+
+["√x", "sqrt(", "science", "Square root"],
+
+  ["7", "7"], ["8", "8"], ["9", "9"],
+
+  ["÷", "÷", "operator", "Divide"],
+
+  ["xʸ", "^", "science", "Power"],
+
+
+
+["x²", "^2", "science", "Square"],
+
+  ["4", "4"], ["5", "5"], ["6", "6"],
+
+  ["×", "×", "operator", "Multiply"],
+
+  ["n!", "!", "science", "Factorial"],
+
+
+
+["π", "π", "science", "Pi"],
+
+  ["1", "1"], ["2", "2"], ["3", "3"],
+
+  ["−", "-", "operator", "Subtract"],
+
+  ["%", "%", "science", "Percent: divide by one hundred"],
+
+
+
+["e", "e", "science", "Euler's number"],
+
+  ["0", "0", "wide"],
+
+  [".", ".", "", "Decimal point"],
+
+  ["+", "+", "operator", "Add"],
+
+  ["Ans", "Ans", "science", "Previous answer"],
+
+
+
+["abs", "abs(", "science", "Absolute value"],
+
+  ["±", "@negate", "science", "Negate expression"],
+
+  ["=", "@equals", "equal", "Calculate"]
+
+];
+
+
+
+for (const [label, value, style = "", accessibleLabel] of buttons) {
+
+  const button = document.createElement("button");
+
+  button.type = "button";
+
+  button.className = "key " + style;
+
+  button.textContent = label;
+
+  button.setAttribute("aria-label", accessibleLabel || label);
+
+
+
+button.addEventListener("click", () => {
+
+    switch (value) {
+
+      case "@clear": clearExpression(); break;
+
+      case "@backspace": backspace(); break;
+
+      case "@negate": negate(); break;
+
+      case "@equals": evaluate(); break;
+
+      default: insert(value);
+
+    }
+
+  });
+
+
+
+$("keys").append(button);
+
+}
+
+
+
+/* History uses textContent, never interpreted HTML. */
+
+function renderHistory() {
+
+  const container = $("history-list");
+
+  container.replaceChildren();
+
+
+
+if (!history.length) {
+
+    const empty = document.createElement("div");
+
+    empty.className = "empty";
+
+    empty.textContent = "A little space for your working. Completed calculations appear here.";
+
+    container.append(empty);
+
+    return;
+
+  }
+
+
+
+for (const item of history) {
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+
+    button.className = "entry";
+
+
+
+const tag = document.createElement("small");
+
+    tag.textContent = item.mode + " · REUSE EXPRESSION";
+
+
+
+const expression = document.createElement("span");
+
+    expression.textContent = item.expression;
+
+
+
+const value = document.createElement("strong");
+
+    value.textContent = "= " + format(item.value);
+
+
+
+button.append(tag, expression, value);
+
+
+
+button.addEventListener("click", () => {
+
+      input.value = item.expression;
+
+      mode = item.mode;
+
+
+
+// Restore the original Ans context when the expression uses it.
+
+      const usesAns = /\bans\b/i.test(item.expression);
+
+      if (usesAns) answer = item.ans;
+
+
+
+completed = false;
+
+      displayedValue = item.value;
+
+      output.textContent = format(item.value);
+
+
+
+updateMode();
+
+      persist();
+
+      message(
+
+        usesAns
+
+          ? "Restored with its original Ans value. Press = to recalculate."
+
+          : "Restored. Edit or press = to recalculate."
+
+      );
+
+      focusEnd();
+
+    });
+
+
+
+container.append(button);
+
+  }
+
+}
+
+
+
+$("clear-history").addEventListener("click", () => {
+
+  history = [];
+
+  persist();
+
+  renderHistory();
+
+  message("History cleared.");
+
+});
+
+
+
+/* Mode switching invalidates the displayed calculation. */
+
+for (const unit of ["DEG", "RAD"]) {
+
+  $(unit.toLowerCase()).addEventListener("click", () => {
+
+    mode = unit;
+
+    updateMode();
+
+    persist();
+
+    markEdited();
+
+    message("Angle mode changed to " + mode + ". Press = to calculate.");
+
+  });
+
+}
+
+
+
+input.addEventListener("input", markEdited);
+
+
+
+/* Keyboard editing stays native; Enter and Escape add shortcuts. */
+
+input.addEventListener("keydown", event => {
+
+  if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey) {
+
+    return;
+
+  }
+
+
+
+if (event.key === "Enter" || event.key === "=") {
+
+    event.preventDefault();
+
+    evaluate();
+
+    return;
+
+  }
+
+
+
+if (completed && /^[0-9.+\-*/^()!%]$/.test(event.key)) {
+
+    event.preventDefault();
+
+    insert(event.key);
+
+  }
+
+});
+
+
+
+document.addEventListener("keydown", event => {
+
+  if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey) {
+
+    return;
+
+  }
+
+
+
+if (event.key === "Escape") {
+
+    event.preventDefault();
+
+    clearExpression();
+
+  } else if (event.target === document.body) {
+
+    if (event.key === "Enter" || event.key === "=") {
+
+      event.preventDefault();
+
+      evaluate();
+
+    } else if (/^[0-9.+\-*/^()!%]$/.test(event.key)) {
+
+      event.preventDefault();
+
+      insert(event.key);
+
+    }
+
+  }
+
+});
+
+
+
+$("copy").addEventListener("click", async () => {
+
+  if (displayedValue === null) {
+
+    message("Calculate or restore a result first.");
+
+    return;
+
+  }
+
+
+
+try {
+
+    if (!navigator.clipboard || !window.isSecureContext) {
+
+      throw Error("Clipboard unavailable.");
+
+    }
+
+
+
+await navigator.clipboard.writeText(String(displayedValue));
+
+    message("Full-precision result copied.");
+
+  } catch {
+
+    const range = document.createRange();
+
+    range.selectNodeContents(output);
+
+    const selection = window.getSelection();
+
+    selection.removeAllRanges();
+
+    selection.addRange(range);
+
+    message("Result selected. Use your browser's Copy command.");
+
+  }
+
+});
+
+
+
+updateMode();
+
+renderHistory();
+
+</script>
+
+</body>
+
+</html>
